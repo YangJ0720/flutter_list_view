@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_list_view/provider/revoke_provider.dart';
 import 'package:flutter_list_view/widget/expand/model/expand_group_model.dart';
 import 'package:flutter_list_view/model/task_model.dart';
 import 'package:flutter_list_view/widget/slide_view.dart';
+import 'package:provider/provider.dart';
 
 class ExpandListView extends StatelessWidget {
   final ExpandGroupModel model;
@@ -33,7 +35,7 @@ class ExpandListView extends StatelessWidget {
   }
 
   ///
-  Widget _createItemView(int index, TaskModel item, bool isExpanded) {
+  Widget _createItemView(context, int index, TaskModel item, bool isExpanded) {
     if (isExpanded) {
       // 展开
       return SlideView(
@@ -43,6 +45,9 @@ class ExpandListView extends StatelessWidget {
           var list = model.list;
           list.remove(item);
           listValueChanged.call(list);
+          //
+          String json = item.toJson();
+          Provider.of<RevokeProvider>(context, listen: false).put(json);
         },
       );
     }
@@ -70,7 +75,7 @@ class ExpandListView extends StatelessWidget {
               },
             );
           } else {
-            return _createItemView(index, item, model.isExpandedTop());
+            return _createItemView(context, index, item, model.isExpandedTop());
           }
         } else if (model.isInvalidRange(index)) {
           // 已过期
@@ -86,7 +91,7 @@ class ExpandListView extends StatelessWidget {
               },
             );
           } else {
-            return _createItemView(index, item, model.isExpandedInvalid());
+            return _createItemView(context, index, item, model.isExpandedInvalid());
           }
         } else if (model.isOtherRange(index)) {
           // 其他日期
@@ -102,7 +107,7 @@ class ExpandListView extends StatelessWidget {
               },
             );
           } else {
-            return _createItemView(index, item, model.isExpandedOther());
+            return _createItemView(context, index, item, model.isExpandedOther());
           }
         } else if (model.isCompleteRange(index)) {
           // 已完成
@@ -118,7 +123,7 @@ class ExpandListView extends StatelessWidget {
               },
             );
           } else {
-            return _createItemView(index, item, model.isExpandedComplete());
+            return _createItemView(context, index, item, model.isExpandedComplete());
           }
         } else if (model.isHasStarRange(index)) {
           // 有星标
@@ -134,7 +139,7 @@ class ExpandListView extends StatelessWidget {
               },
             );
           } else {
-            return _createItemView(index, item, model.isExpandedHasStar());
+            return _createItemView(context, index, item, model.isExpandedHasStar());
           }
         } else {
           // 无星标
@@ -150,7 +155,7 @@ class ExpandListView extends StatelessWidget {
               },
             );
           } else {
-            return _createItemView(index, item, model.isExpandedNoStar());
+            return _createItemView(context, index, item, model.isExpandedNoStar());
           }
         }
       },

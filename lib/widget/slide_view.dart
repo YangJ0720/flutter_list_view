@@ -68,10 +68,7 @@ class SlideView extends StatelessWidget {
 
       // The child of the Slidable is what the user sees when the
       // component is not dragged.
-      child: ListTile(
-        title: Text(model.name),
-        subtitle: Text(model.dateTime.toIso8601String()),
-      ),
+      child: ListTile(title: Text(model.name), subtitle: Text(model.dateTime)),
     );
   }
 }

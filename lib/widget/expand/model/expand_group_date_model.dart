@@ -106,10 +106,10 @@ class ExpandGroupDateModel extends ExpandGroupModel {
     } else if (model.isComplete) {
       // 已完成
       complete.list.add(model);
-    } else if (currentDateTime.difference(model.dateTime).inDays > 0) {
+    } else if (currentDateTime.difference(DateTime.parse(model.dateTime)).inDays > 0) {
       // 已过期
       invalid.list.add(model);
-    } else if (currentDateTime.difference(model.dateTime).inDays == 0) {
+    } else if (currentDateTime.difference(DateTime.parse(model.dateTime)).inDays == 0) {
       // 今天
       today.list.add(model);
     } else {
@@ -124,7 +124,7 @@ class ExpandGroupDateModel extends ExpandGroupModel {
     var topList = top.list;
     if (topList.isNotEmpty) {
       top.sIndex = list.length;
-      list.add(TaskModel('置顶', DateTime.now(), false, false, isRoot: true));
+      list.add(TaskModel('置顶', DateTime.now().toIso8601String(), false, false, isRoot: true));
       list.addAll(topList);
       top.eIndex = list.length - 1;
     }
@@ -132,7 +132,7 @@ class ExpandGroupDateModel extends ExpandGroupModel {
     var invalidList = invalid.list;
     if (invalidList.isNotEmpty) {
       invalid.sIndex = list.length;
-      list.add(TaskModel('已过期', DateTime.now(), false, false, isRoot: true));
+      list.add(TaskModel('已过期', DateTime.now().toIso8601String(), false, false, isRoot: true));
       list.addAll(invalidList);
       invalid.eIndex = list.length - 1;
     }
@@ -140,7 +140,7 @@ class ExpandGroupDateModel extends ExpandGroupModel {
     var todayList = today.list;
     if (todayList.isNotEmpty) {
       today.sIndex = list.length;
-      list.add(TaskModel('今天', DateTime.now(), false, false, isRoot: true));
+      list.add(TaskModel('今天', DateTime.now().toIso8601String(), false, false, isRoot: true));
       list.addAll(todayList);
       today.eIndex = list.length - 1;
     }
@@ -148,7 +148,7 @@ class ExpandGroupDateModel extends ExpandGroupModel {
     var otherList = other.list;
     if (otherList.isNotEmpty) {
       other.sIndex = list.length;
-      list.add(TaskModel('其他日期', DateTime.now(), false, false, isRoot: true));
+      list.add(TaskModel('其他日期', DateTime.now().toIso8601String(), false, false, isRoot: true));
       list.addAll(otherList);
       other.eIndex = list.length - 1;
     }
@@ -156,7 +156,7 @@ class ExpandGroupDateModel extends ExpandGroupModel {
     var noDateList = noDate.list;
     if (noDateList.isNotEmpty) {
       noDate.sIndex = list.length;
-      list.add(TaskModel('没有日期', DateTime.now(), false, false, isRoot: true));
+      list.add(TaskModel('没有日期', DateTime.now().toIso8601String(), false, false, isRoot: true));
       list.addAll(noDateList);
       noDate.eIndex = list.length - 1;
     }
@@ -164,7 +164,7 @@ class ExpandGroupDateModel extends ExpandGroupModel {
     var completeList = complete.list;
     if (completeList.isNotEmpty) {
       complete.sIndex = list.length;
-      list.add(TaskModel('已完成', DateTime.now(), false, false, isRoot: true));
+      list.add(TaskModel('已完成', DateTime.now().toIso8601String(), false, false, isRoot: true));
       list.addAll(completeList);
       complete.eIndex = list.length - 1;
     }

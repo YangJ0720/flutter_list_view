@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_list_view/page/home_page.dart';
+import 'package:flutter_list_view/provider/revoke_provider.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(MultiProvider(
+    providers: [ChangeNotifierProvider(create: (_) => RevokeProvider())],
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {

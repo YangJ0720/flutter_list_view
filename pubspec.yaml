@@ -30,6 +30,8 @@ dependencies:
   cupertino_icons: ^1.0.0
   # 滑动删除插件
   flutter_slidable: ^1.1.0
+  #
+  provider: ^6.0.2
 
 dev_dependencies:
   flutter_test:
