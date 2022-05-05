@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_list_view/model/expand_list_model.dart';
+import 'package:flutter_list_view/widget/expand/model/expand_group_model.dart';
 import 'package:flutter_list_view/model/task_model.dart';
 import 'package:flutter_list_view/widget/slide_view.dart';
 
 class ExpandListView extends StatelessWidget {
-  final ExpandListModel model;
-  final ValueChanged<ExpandListModel> valueChanged;
+  final ExpandGroupModel model;
+  final ValueChanged<ExpandGroupModel> valueChanged;
+  final ValueChanged<List<TaskModel>> listValueChanged;
 
-  const ExpandListView(this.model, this.valueChanged, {Key key})
+  const ExpandListView(this.model, this.valueChanged, this.listValueChanged,
+      {Key key})
       : super(key: key);
 
   ///
@@ -34,7 +36,15 @@ class ExpandListView extends StatelessWidget {
   Widget _createItemView(int index, TaskModel item, bool isExpanded) {
     if (isExpanded) {
       // 展开
-      return SlideView(item, key: ValueKey(index));
+      return SlideView(
+        item,
+        key: ValueKey(index),
+        callback: () {
+          var list = model.list;
+          list.remove(item);
+          listValueChanged.call(list);
+        },
+      );
     }
     // 折叠
     return SizedBox(key: ValueKey(index));
@@ -48,54 +58,101 @@ class ExpandListView extends StatelessWidget {
         var item = list[index];
         if (model.isTopRange(index)) {
           // 置顶
-          if (index == model.sIndexTop) {
+          if (item.isRoot) {
             return _createItemGroupView(
               index,
               item,
               Colors.green[200],
-              model.isExpandedTop,
+              model.isExpandedTop(),
               () {
-                model.isExpandedTop = !model.isExpandedTop;
+                model.setExpandedTop(!model.isExpandedTop());
                 valueChanged.call(model);
               },
             );
           } else {
-            return _createItemView(index, item, model.isExpandedTop);
+            return _createItemView(index, item, model.isExpandedTop());
           }
-        } else if (model.isOtherRange(index)) {
-          // 其他日期
-          if (index == model.sIndexOther) {
+        } else if (model.isInvalidRange(index)) {
+          // 已过期
+          if (item.isRoot) {
             return _createItemGroupView(
               index,
               item,
               Colors.red[200],
-              model.isExpandedOther,
+              model.isExpandedInvalid(),
               () {
-                model.isExpandedOther = !model.isExpandedOther;
+                model.setExpandedInvalid(!model.isExpandedInvalid());
                 valueChanged.call(model);
               },
             );
           } else {
-            return _createItemView(index, item, model.isExpandedOther);
+            return _createItemView(index, item, model.isExpandedInvalid());
+          }
+        } else if (model.isOtherRange(index)) {
+          // 其他日期
+          if (item.isRoot) {
+            return _createItemGroupView(
+              index,
+              item,
+              Colors.yellow[200],
+              model.isExpandedOther(),
+              () {
+                model.setExpandedOther(!model.isExpandedOther());
+                valueChanged.call(model);
+              },
+            );
+          } else {
+            return _createItemView(index, item, model.isExpandedOther());
           }
         } else if (model.isCompleteRange(index)) {
           // 已完成
-          if (index == model.sIndexComplete) {
+          if (item.isRoot) {
             return _createItemGroupView(
               index,
               item,
               Colors.blue[200],
-              model.isExpandedComplete,
+              model.isExpandedComplete(),
               () {
-                model.isExpandedComplete = !model.isExpandedComplete;
+                model.setExpandedComplete(!model.isExpandedComplete());
                 valueChanged.call(model);
               },
             );
           } else {
-            return _createItemView(index, item, model.isExpandedComplete);
+            return _createItemView(index, item, model.isExpandedComplete());
+          }
+        } else if (model.isHasStarRange(index)) {
+          // 有星标
+          if (item.isRoot) {
+            return _createItemGroupView(
+              index,
+              item,
+              Colors.orange[200],
+              model.isExpandedHasStar(),
+              () {
+                model.setExpandedHasStar(!model.isExpandedHasStar());
+                valueChanged.call(model);
+              },
+            );
+          } else {
+            return _createItemView(index, item, model.isExpandedHasStar());
+          }
+        } else {
+          // 无星标
+          if (item.isRoot) {
+            return _createItemGroupView(
+              index,
+              item,
+              Colors.brown[200],
+              model.isExpandedNoStar(),
+              () {
+                model.setExpandedNoStar(!model.isExpandedNoStar());
+                valueChanged.call(model);
+              },
+            );
+          } else {
+            return _createItemView(index, item, model.isExpandedNoStar());
           }
         }
-        return _createItemView(index, item, true);
       },
       itemCount: list.length,
       onReorder: (int oldIndex, int newIndex) {
@@ -110,7 +167,8 @@ class ExpandListView extends StatelessWidget {
           }
           //
           oldIndexItem.isMarkTop = newIndexItem.isMarkTop;
-          oldIndexItem.isComplete = newIndexItem.isComplete;
+          // oldIndexItem.isComplete = newIndexItem.isComplete;
+          // oldIndexItem.hasStar = newIndexItem.hasStar;
           //
           print('oldIndexItem = ${oldIndexItem.toString()}');
           print('newIndexItem = ${newIndexItem.toString()}');
@@ -127,15 +185,17 @@ class ExpandListView extends StatelessWidget {
           }
           //
           oldIndexItem.isMarkTop = newIndexItem.isMarkTop;
-          oldIndexItem.isComplete = newIndexItem.isComplete;
+          // oldIndexItem.isComplete = newIndexItem.isComplete;
+          // oldIndexItem.hasStar = newIndexItem.hasStar;
           //
           print('oldIndexItem = ${oldIndexItem.toString()}');
           print('newIndexItem = ${newIndexItem.toString()}');
+          print('hasStar = ${newIndexItem.toString()}');
         }
         //
         var child = list.removeAt(oldIndex);
         list.insert(newIndex, child);
-        valueChanged.call(ExpandListModel.factory(list));
+        listValueChanged.call(list);
       },
     );
   }

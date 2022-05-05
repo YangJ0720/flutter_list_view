@@ -27,27 +27,6 @@ class SlideView extends StatelessWidget {
         children: [
           // A SlidableAction can have an icon and/or a label.
           SlidableAction(
-            onPressed: (_) => this.callback?.call(),
-            backgroundColor: Color(0xFFFE4A49),
-            foregroundColor: Colors.white,
-            icon: Icons.delete,
-            label: 'Delete',
-          ),
-          SlidableAction(
-            onPressed: (_) {},
-            backgroundColor: Color(0xFF21B7CA),
-            foregroundColor: Colors.white,
-            icon: Icons.share,
-            label: 'Share',
-          ),
-        ],
-      ),
-
-      // The end action pane is the one at the right or the bottom side.
-      endActionPane: ActionPane(
-        motion: ScrollMotion(),
-        children: [
-          SlidableAction(
             // An action can be bigger than the others.
             flex: 2,
             onPressed: (_) {},
@@ -62,6 +41,27 @@ class SlideView extends StatelessWidget {
             foregroundColor: Colors.white,
             icon: Icons.save,
             label: 'Save',
+          ),
+        ],
+      ),
+
+      // The end action pane is the one at the right or the bottom side.
+      endActionPane: ActionPane(
+        motion: ScrollMotion(),
+        children: [
+          SlidableAction(
+            onPressed: (_) => this.callback?.call(),
+            backgroundColor: Color(0xFFFE4A49),
+            foregroundColor: Colors.white,
+            icon: Icons.delete,
+            label: 'Delete',
+          ),
+          SlidableAction(
+            onPressed: (_) {},
+            backgroundColor: Color(0xFF21B7CA),
+            foregroundColor: Colors.white,
+            icon: Icons.share,
+            label: 'Share',
           ),
         ],
       ),
