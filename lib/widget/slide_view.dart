@@ -5,9 +5,10 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 class SlideView extends StatelessWidget {
   final TaskModel model;
 
+  final VoidCallback onTap;
   final VoidCallback callback;
 
-  const SlideView(this.model, {Key key, this.callback}) : super(key: key);
+  const SlideView(this.model, {Key key, this.onTap, this.callback}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +69,11 @@ class SlideView extends StatelessWidget {
 
       // The child of the Slidable is what the user sees when the
       // component is not dragged.
-      child: ListTile(title: Text(model.name), subtitle: Text(model.dateTime)),
+      child: ListTile(
+        title: Text(model.name),
+        subtitle: Text(model.dateTime),
+        onTap: () => onTap?.call(),
+      ),
     );
   }
 }

@@ -41,4 +41,9 @@ class TaskModel {
     "hasStar": hasStar,
     "isRoot": isRoot,
   };
+
+  @override
+  String toString() {
+    return 'TaskModel{name: $name, dateTime: $dateTime, isMarkTop: $isMarkTop, isComplete: $isComplete, hasStar: $hasStar, isRoot: $isRoot}';
+  }
 }

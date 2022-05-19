@@ -1,8 +1,8 @@
 
-import 'package:flutter_list_view/model/task_model.dart';
+import 'package:flutter_list_view/widget/expand/wrap/expand_wrap.dart';
 
 class ExpandGroupItemModel {
-  List<TaskModel> list = [];
+  List<ExpandWrap> list = [];
   int sIndex;
   int eIndex;
   bool isExpanded;

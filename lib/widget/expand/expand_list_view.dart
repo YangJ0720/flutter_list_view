@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_list_view/provider/revoke_provider.dart';
 import 'package:flutter_list_view/widget/expand/model/expand_group_model.dart';
-import 'package:flutter_list_view/model/task_model.dart';
+import 'package:flutter_list_view/widget/expand/wrap/expand_wrap.dart';
 import 'package:flutter_list_view/widget/slide_view.dart';
 import 'package:provider/provider.dart';
 
 class ExpandListView extends StatelessWidget {
   final ExpandGroupModel model;
   final ValueChanged<ExpandGroupModel> valueChanged;
-  final ValueChanged<List<TaskModel>> listValueChanged;
+  final ValueChanged<List<ExpandWrap>> listValueChanged;
 
   const ExpandListView(this.model, this.valueChanged, this.listValueChanged,
       {Key key})
@@ -21,7 +21,7 @@ class ExpandListView extends StatelessWidget {
       child: Container(
         child: Row(
           children: [
-            Text(item.name),
+            Text(item.model.name),
             Spacer(),
             Icon(isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down),
           ],
@@ -35,18 +35,19 @@ class ExpandListView extends StatelessWidget {
   }
 
   ///
-  Widget _createItemView(context, int index, TaskModel item, bool isExpanded) {
+  Widget _createItemView(context, int index, ExpandWrap item, bool isExpanded) {
     if (isExpanded) {
       // 展开
       return SlideView(
-        item,
+        item.model,
         key: ValueKey(index),
+        onTap: () => print('item = ${item.toString()}'),
         callback: () {
           var list = model.list;
           list.remove(item);
           listValueChanged.call(list);
           //
-          String json = item.toJson();
+          String json = item.model.toJson();
           Provider.of<RevokeProvider>(context, listen: false).put(json);
         },
       );
@@ -61,102 +62,20 @@ class ExpandListView extends StatelessWidget {
     return ReorderableListView.builder(
       itemBuilder: (_, index) {
         var item = list[index];
-        if (model.isTopRange(index)) {
-          // 置顶
-          if (item.isRoot) {
-            return _createItemGroupView(
-              index,
-              item,
-              Colors.green[200],
-              model.isExpandedTop(),
-              () {
-                model.setExpandedTop(!model.isExpandedTop());
-                valueChanged.call(model);
-              },
-            );
-          } else {
-            return _createItemView(context, index, item, model.isExpandedTop());
-          }
-        } else if (model.isInvalidRange(index)) {
-          // 已过期
-          if (item.isRoot) {
-            return _createItemGroupView(
-              index,
-              item,
-              Colors.red[200],
-              model.isExpandedInvalid(),
-              () {
-                model.setExpandedInvalid(!model.isExpandedInvalid());
-                valueChanged.call(model);
-              },
-            );
-          } else {
-            return _createItemView(context, index, item, model.isExpandedInvalid());
-          }
-        } else if (model.isOtherRange(index)) {
-          // 其他日期
-          if (item.isRoot) {
-            return _createItemGroupView(
-              index,
-              item,
-              Colors.yellow[200],
-              model.isExpandedOther(),
-              () {
-                model.setExpandedOther(!model.isExpandedOther());
-                valueChanged.call(model);
-              },
-            );
-          } else {
-            return _createItemView(context, index, item, model.isExpandedOther());
-          }
-        } else if (model.isCompleteRange(index)) {
-          // 已完成
-          if (item.isRoot) {
-            return _createItemGroupView(
-              index,
-              item,
-              Colors.blue[200],
-              model.isExpandedComplete(),
-              () {
-                model.setExpandedComplete(!model.isExpandedComplete());
-                valueChanged.call(model);
-              },
-            );
-          } else {
-            return _createItemView(context, index, item, model.isExpandedComplete());
-          }
-        } else if (model.isHasStarRange(index)) {
-          // 有星标
-          if (item.isRoot) {
-            return _createItemGroupView(
-              index,
-              item,
-              Colors.orange[200],
-              model.isExpandedHasStar(),
-              () {
-                model.setExpandedHasStar(!model.isExpandedHasStar());
-                valueChanged.call(model);
-              },
-            );
-          } else {
-            return _createItemView(context, index, item, model.isExpandedHasStar());
-          }
+        var action = item.action;
+        bool isExpanded = action.isExpanded(model);
+        if (item.model.isRoot) {
+          return _createItemGroupView(
+            index,
+            item,
+            action.color,
+            isExpanded, () {
+              action.toggle(model);
+              valueChanged.call(model);
+            },
+          );
         } else {
-          // 无星标
-          if (item.isRoot) {
-            return _createItemGroupView(
-              index,
-              item,
-              Colors.brown[200],
-              model.isExpandedNoStar(),
-              () {
-                model.setExpandedNoStar(!model.isExpandedNoStar());
-                valueChanged.call(model);
-              },
-            );
-          } else {
-            return _createItemView(context, index, item, model.isExpandedNoStar());
-          }
+          return _createItemView(context, index, item, isExpanded);
         }
       },
       itemCount: list.length,
@@ -164,11 +83,11 @@ class ExpandListView extends StatelessWidget {
         print('oldIndex = $oldIndex, newIndex = $newIndex');
         if (oldIndex < newIndex) {
           newIndex -= 1;
-          var oldIndexItem = list[oldIndex];
-          var newIndexItem = list[newIndex];
+          var oldIndexItem = list[oldIndex].model;
+          var newIndexItem = list[newIndex].model;
           // 向下拖拽至分组item边界检查
           if (newIndexItem.isRoot) {
-            newIndexItem = list[newIndex + 1];
+            newIndexItem = list[newIndex + 1].model;
           }
           //
           oldIndexItem.isMarkTop = newIndexItem.isMarkTop;
@@ -182,11 +101,11 @@ class ExpandListView extends StatelessWidget {
           if (newIndex == 0) {
             newIndex = 1;
           }
-          var oldIndexItem = list[oldIndex];
-          var newIndexItem = list[newIndex];
+          var oldIndexItem = list[oldIndex].model;
+          var newIndexItem = list[newIndex].model;
           // 向上拖拽至分组item边界检查
           if (newIndexItem.isRoot) {
-            newIndexItem = list[newIndex - 1];
+            newIndexItem = list[newIndex - 1].model;
           }
           //
           oldIndexItem.isMarkTop = newIndexItem.isMarkTop;

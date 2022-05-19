@@ -1,6 +1,12 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_list_view/widget/expand/action/expand_action_complete.dart';
+import 'package:flutter_list_view/widget/expand/action/expand_action_invalid.dart';
+import 'package:flutter_list_view/widget/expand/action/expand_action_today.dart';
+import 'package:flutter_list_view/widget/expand/action/expand_action_top.dart';
 import 'package:flutter_list_view/widget/expand/model/expand_group_item_model.dart';
 import 'package:flutter_list_view/widget/expand/model/expand_group_model.dart';
 import 'package:flutter_list_view/model/task_model.dart';
+import 'package:flutter_list_view/widget/expand/wrap/expand_wrap.dart';
 
 /// 按状态
 class ExpandGroupStateModel extends ExpandGroupModel {
@@ -102,29 +108,38 @@ class ExpandGroupStateModel extends ExpandGroupModel {
   void contains(DateTime currentDateTime, TaskModel model) {
     if (model.isMarkTop) {
       // 置顶
-      top.list.add(model);
+      top.list.add(ExpandWrap(model, ExpandActionTop()));
     } else if (model.isComplete) {
       // 已完成
-      complete.list.add(model);
+      complete.list.add(ExpandWrap(model, ExpandActionTop()));
     } else if (model.hasStar) {
       // 有星标
-      hasStar.list.add(model);
+      hasStar.list.add(ExpandWrap(model, ExpandActionTop()));
     } else if (currentDateTime.difference(DateTime.parse(model.dateTime)).inDays > 0) {
       // 已过期
-      invalid.list.add(model);
+      invalid.list.add(ExpandWrap(model, ExpandActionTop()));
     } else {
       // 无星标
-      noStar.list.add(model);
+      noStar.list.add(ExpandWrap(model, ExpandActionTop()));
     }
   }
 
-  List<TaskModel> toList() {
-    List<TaskModel> list = [];
+
+  @override
+  List<ExpandWrap> toList() {
+    List<ExpandWrap> list = [];
     // 置顶
     var topList = top.list;
     if (topList.isNotEmpty) {
       top.sIndex = list.length;
-      list.add(TaskModel('置顶', DateTime.now().toIso8601String(), false, false, isRoot: true));
+      var taskModel = TaskModel(
+        '置顶',
+        DateTime.now().toIso8601String(),
+        false,
+        false,
+        isRoot: true,
+      );
+      list.add(ExpandWrap(taskModel, ExpandActionTop()));
       list.addAll(topList);
       top.eIndex = list.length - 1;
     }
@@ -132,7 +147,14 @@ class ExpandGroupStateModel extends ExpandGroupModel {
     var invalidList = invalid.list;
     if (invalidList.isNotEmpty) {
       invalid.sIndex = list.length;
-      list.add(TaskModel('已过期', DateTime.now().toIso8601String(), false, false, isRoot: true));
+      var taskModel = TaskModel(
+        '已过期',
+        DateTime.now().toIso8601String(),
+        false,
+        false,
+        isRoot: true,
+      );
+      list.add(ExpandWrap(taskModel, ExpandActionInvalid()));
       list.addAll(invalidList);
       invalid.eIndex = list.length - 1;
     }
@@ -140,7 +162,14 @@ class ExpandGroupStateModel extends ExpandGroupModel {
     var todayList = today.list;
     if (todayList.isNotEmpty) {
       today.sIndex = list.length;
-      list.add(TaskModel('今天', DateTime.now().toIso8601String(), false, false, isRoot: true));
+      var taskModel = TaskModel(
+        '今天',
+        DateTime.now().toIso8601String(),
+        false,
+        false,
+        isRoot: true,
+      );
+      list.add(ExpandWrap(taskModel, ExpandActionToday()));
       list.addAll(todayList);
       today.eIndex = list.length - 1;
     }
@@ -152,7 +181,14 @@ class ExpandGroupStateModel extends ExpandGroupModel {
     var hasStarList = hasStar.list;
     if (hasStarList.isNotEmpty) {
       hasStar.sIndex = list.length;
-      list.add(TaskModel('有星标', DateTime.now().toIso8601String(), false, false, isRoot: true));
+      var taskModel = TaskModel(
+        '有星标',
+        DateTime.now().toIso8601String(),
+        false,
+        false,
+        isRoot: true,
+      );
+      list.add(ExpandWrap(taskModel, ExpandActionTop()));
       list.addAll(hasStarList);
       hasStar.eIndex = list.length - 1;
     }
@@ -160,7 +196,14 @@ class ExpandGroupStateModel extends ExpandGroupModel {
     var noStarList = noStar.list;
     if (noStarList.isNotEmpty) {
       noStar.sIndex = list.length;
-      list.add(TaskModel('无星标', DateTime.now().toIso8601String(), false, false, isRoot: true));
+      var taskModel = TaskModel(
+        '无星标',
+        DateTime.now().toIso8601String(),
+        false,
+        false,
+        isRoot: true,
+      );
+      list.add(ExpandWrap(taskModel, ExpandActionTop()));
       list.addAll(noStarList);
       noStar.eIndex = list.length - 1;
     }
@@ -168,7 +211,14 @@ class ExpandGroupStateModel extends ExpandGroupModel {
     var completeList = complete.list;
     if (completeList.isNotEmpty) {
       complete.sIndex = list.length;
-      list.add(TaskModel('已完成', DateTime.now().toIso8601String(), false, false, isRoot: true));
+      var taskModel = TaskModel(
+        '已完成',
+        DateTime.now().toIso8601String(),
+        false,
+        false,
+        isRoot: true,
+      );
+      list.add(ExpandWrap(taskModel, ExpandActionComplete()));
       list.addAll(completeList);
       complete.eIndex = list.length - 1;
     }

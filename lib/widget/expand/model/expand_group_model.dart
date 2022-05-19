@@ -1,9 +1,10 @@
 import 'package:flutter_list_view/model/task_model.dart';
+import 'package:flutter_list_view/widget/expand/wrap/expand_wrap.dart';
 
 abstract class ExpandGroupModel {
 
   ///
-  List<TaskModel> list = [];
+  List<ExpandWrap> list = [];
 
   /// 置顶
   bool isTopRange(int index);
@@ -47,4 +48,5 @@ abstract class ExpandGroupModel {
 
   void contains(DateTime currentDateTime, TaskModel model);
 
+  List<ExpandWrap> toList();
 }

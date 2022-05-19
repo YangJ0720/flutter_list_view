@@ -23,24 +23,54 @@ class _HomePageState extends State<HomePage> {
   void _loadData() {
     List<TaskModel> list = [];
     list.add(
-      TaskModel('去打架', DateTime(2021, 5, 1, 15, 30, 0).toIso8601String(), true, false),
+      TaskModel(
+        '去打架',
+        DateTime(2021, 5, 1, 15, 30, 0).toIso8601String(),
+        true,
+        false,
+      ),
     ); // 置顶
     list.add(
-      TaskModel('去打球', DateTime(2021, 12, 30, 18, 0, 0).toIso8601String(), true, false),
+      TaskModel(
+        '去打球',
+        DateTime(2021, 12, 30, 18, 0, 0).toIso8601String(),
+        true,
+        false,
+      ),
     ); // 置顶
     list.add(
-      TaskModel('去洗澡', DateTime(2021, 12, 11, 10, 0, 0).toIso8601String(), false, false),
+      TaskModel(
+        '去洗澡',
+        DateTime(2021, 12, 11, 10, 0, 0).toIso8601String(),
+        false,
+        false,
+      ),
     ); // 已过期
     list.add(
-      TaskModel('去洗碗', DateTime(2022, 1, 1, 8, 0, 0).toIso8601String(), false, false),
+      TaskModel(
+        '去洗碗',
+        DateTime(2022, 1, 1, 8, 0, 0).toIso8601String(),
+        false,
+        false,
+      ),
     ); // 已过期
     list.add(
-      TaskModel('去旅游', DateTime(2022, 10, 1, 8, 0, 0).toIso8601String(), false, false),
+      TaskModel(
+        '去旅游',
+        DateTime(2022, 10, 1, 8, 0, 0).toIso8601String(),
+        false,
+        false,
+      ),
     ); // 其他日期
     list.add(
-      TaskModel('吃饺子', DateTime(2021, 12, 21, 20, 0, 0).toIso8601String(), false, true),
+      TaskModel(
+        '吃饺子',
+        DateTime(2021, 12, 21, 20, 0, 0).toIso8601String(),
+        false,
+        true,
+      ),
     ); // 已完成
-    this._controller.sink.add(ExpandGroupDateModel.build(list));
+    this._controller.sink.add(ExpandGroupDateModel.buildByTaskModel(list));
   }
 
   @override
@@ -68,12 +98,9 @@ class _HomePageState extends State<HomePage> {
                 Positioned.fill(
                   child: ExpandListView(
                     model,
+                    (value) => _controller.sink.add(value),
                     (value) {
-                      var model = ExpandGroupDateModel.build(value.list);
-                      _controller.sink.add(model);
-                    },
-                    (value) {
-                      _controller.sink.add(ExpandGroupDateModel.build(value));
+                      _controller.sink.add(ExpandGroupDateModel.buildByExpandWrap(value));
                       _queue.delay(() {
                         Provider.of<RevokeProvider>(context, listen: false).clear();
                       });
@@ -83,13 +110,13 @@ class _HomePageState extends State<HomePage> {
                 Positioned(
                   child: RevokeView(
                     valueChanged: (value) {
-                      var list = model.list;
-                      value.forEach((element) {
-                        list.add(TaskModel.fromJson(element));
-                      });
-                      _controller.sink.add(ExpandGroupDateModel.build(list));
-                      //
-                      _queue.cancel();
+                      // var list = model.list;
+                      // value.forEach((element) {
+                      //   list.add(TaskModel.fromJson(element));
+                      // });
+                      // _controller.sink.add(ExpandGroupDateModel.build(list));
+                      // //
+                      // _queue.cancel();
                     },
                   ),
                   right: 10,
